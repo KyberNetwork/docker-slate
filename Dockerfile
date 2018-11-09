@@ -2,15 +2,15 @@ FROM ruby:2.5-alpine
 
 ENV SLATE_VERSION=v2.3.1
 
-RUN apk update \
-     && apk add --no-cache coreutils git make g++ nodejs
+RUN apk add --no-cache coreutils git make g++ nodejs
 
-RUN git clone https://github.com/lord/slate /slate && \
-    cd /slate && \
-    git checkout -b $SLATE_VERSION && \
-    rm -rf .git
+RUN git clone --branch $SLATE_VERSION --single-branch --depth 1 https://github.com/lord/slate /slate
 
 WORKDIR /slate
-RUN bundle install --verbose
 
-CMD ["bundle", "exec", "bundle", "exec",  "middleman", "build", "--clean", "--verbose"]
+COPY ./stylesheets/ ./javascripts/ ./fonts/ ./images/ /template/
+COPY ./build.sh /slate
+
+RUN bundle install --verbose && rm -rf .git
+
+CMD ["/slate/build.sh"]
