@@ -10,7 +10,11 @@ RUN git clone https://github.com/lord/slate /slate && \
     git checkout -b $SLATE_VERSION && \
     rm -rf .git
 
+ADD ./stylesheets ./javascripts ./fonts ./images /slate/temp/
+ADD ./build.sh /slate
+
+
 WORKDIR /slate
 RUN bundle install --verbose
 
-CMD ["bundle", "exec", "bundle", "exec",  "middleman", "build", "--clean", "--verbose"]
+CMD ["/slate/build.sh"]
